@@ -31,8 +31,20 @@ namespace A7CL
         public void Withdraw(double amount)
         {
             Contract.Requires<ArgumentOutOfRangeException>(amount > 0);
-            Contract.Requires<ArgumentOutOfRangeException>(amount <= Balance);
+            //Contract.Requires<ArgumentOutOfRangeException>(amount <= Balance);
+            //Contract.Ensures(Contract.Result<double>() + amount == Balance); // Gives error since method dont have a return value
+            Contract.EnsuresOnThrow<ArgumentException>(Contract.OldValue<double>(Balance) == Balance);
+            if (Balance < amount)
+                throw new ArgumentException("Not enough money"); // We should make our own exception for this
+
+
             Balance = Balance - amount;
+        }
+
+        [ContractInvariantMethod]
+        private void ObjectInvariat()
+        {
+            Contract.Invariant(Balance > 0);
         }
         #endregion
     }
